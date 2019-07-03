@@ -17,5 +17,11 @@ namespace Examples.Chapter1
 
       public static Func<T2, T1, R> SwapArgs<T1, T2, R>(this Func<T1, T2, R> func)
          => (t2, t1) => func(t1, t2);
+
+      // adapter function
+      public static Func<T2, T1, R> SwapArgsOldSyntax<T1, T2, R>(this Func<T1, T2, R> func)
+      {
+          return new Func<T2, T1, R>((t2, t1) => func(t1, t2));
+      }
    }
 }
