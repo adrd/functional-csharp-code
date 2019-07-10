@@ -38,7 +38,7 @@ namespace Exercises.Chapter2
        // pure function
        public static Double ComputeBmi(Double height, Double weight)
        {
-           //Double bmi = Math.Round(weight / height * height, 2); // ???
+           //Double bmi = Math.Round(weight / (height * height), 2); 
            Double bmi = Math.Round(weight / Math.Pow(height, 2), 2);
 
            return bmi;
