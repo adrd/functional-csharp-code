@@ -47,7 +47,7 @@ namespace Exercises.Chapter3
         // new List<int>().Lookup(isOdd) // => None
         // new List<int> { 1 }.Lookup(isOdd) // => Some(1)
 
-        // f : (IEnumerable<Int32>, f(Int32) -> Boolean) -> Option<Int32> = Some(Int32) | None
+        // f : (IEnumerable<Int32>, f : (Int32 -> Boolean)) -> Option<Int32> = Some(Int32) | None
 
         public static Option<T> MyLookup<T>(this IEnumerable<T> source, Func<T, Boolean> predicate)
         {
