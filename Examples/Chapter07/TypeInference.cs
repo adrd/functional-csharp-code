@@ -14,12 +14,12 @@ namespace Examples.Chapter7
       PersonalizedGreeting GreeterMethod(Greeting gr, Name name)
          => $"{gr}, {name}";
 
-      // the below does NOT compile!
-      //Func<Name, Greeting> __GreetWith(Greeting greeting)
-      //   => GreeterMethod.Apply(greeting);
+        // the below does NOT compile!
+        //Func<Name, Greeting> __GreetWith(Greeting greeting)
+        //   => GreeterMethod.Apply(greeting);
 
-      // the lines below compiles, but oh my!
-      Func<Name, PersonalizedGreeting> GreetWith_1(Greeting greeting)
+        // the lines below compiles, but oh my!
+        Func<Name, PersonalizedGreeting> GreetWith_1(Greeting greeting)
          => FuncExt.Apply<Greeting, Name, PersonalizedGreeting>(GreeterMethod, greeting);
 
       Func<Name, PersonalizedGreeting> _GreetWith_2(Greeting greeting)

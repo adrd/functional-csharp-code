@@ -16,10 +16,14 @@ namespace Examples.Chapter7
          Func<Greeting, Name, PersonalizedGreeting> greet 
             = (gr, name) => $"{gr}, {name}";
 
-         Func<Greeting, Func<Name, PersonalizedGreeting>> greetWith 
-            = gr => name => $"{gr}, {name}";
+         //Func<Greeting, Func<Name, PersonalizedGreeting>> greetWith 
+         //   = gr => name => $"{gr}, {name}";
 
-         var names = new Name[] { "Tristan", "Ivan" };
+         // rewrite above example
+         Func<Greeting, Func<Name, PersonalizedGreeting>> greetWith 
+             = gr => new Func<Name, Name>(name => $"{gr}, {name}");
+
+         Name[] names = new Name[] { "Tristan", "Ivan" };
 
          WriteLine("Greet - with 'normal', multi-argument application");
          names.Map(g => greet("Hello", g)).ForEach(WriteLine);
@@ -27,19 +31,19 @@ namespace Examples.Chapter7
          //         Hello, Ivan
 
          WriteLine("Greet formally - with partial application, manual");
-         var greetFormally = greetWith("Good evening");
+         Func<Name, PersonalizedGreeting> greetFormally = greetWith("Good evening");
          names.Map(greetFormally).ForEach(WriteLine);
          // prints: Good evening, Tristan
          //         Good evening, Ivan
 
          WriteLine("Greet informally - with partial application, general");
-         var greetInformally = greet.Apply("Hey");
+         Func<Name, PersonalizedGreeting> greetInformally = greet.Apply("Hey");
          names.Map(greetInformally).ForEach(WriteLine);
          // prints: Hey, Tristan
          //         Hey, Ivan
 
          WriteLine("Greet nostalgically - with partial application, currying");
-         var greetNostalgically = greet.Curry()("Arrivederci");
+         Func<Name, PersonalizedGreeting> greetNostalgically = greet.Curry()("Arrivederci");
          names.Map(greetNostalgically).ForEach(WriteLine);
          // prints: Arrivederci, Tristan
          //         Arrivederci, Ivan

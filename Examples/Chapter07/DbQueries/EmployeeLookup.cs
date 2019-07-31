@@ -16,13 +16,13 @@ namespace Examples.Chapter7
             , sqlByName = $"{select} WHERE LASTNAME = @LastName";
 
          // queryEmployees : (SqlTemplate, object) → IEnumerable<Employee>
-         var queryEmployees = conn.Query<Employee>();
+         Func<SqlTemplate, Object, IEnumerable<Employee>> queryEmployees = conn.Query<Employee>();
 
          // queryById : object → IEnumerable<Employee>
-         var queryById = queryEmployees.Apply(sqlById);
+         Func<Object, IEnumerable<Employee>> queryById = queryEmployees.Apply(sqlById);
 
          // queryByLastName : object → IEnumerable<Employee>
-         var queryByLastName = queryEmployees.Apply(sqlByName);
+         Func<Object, IEnumerable<Employee>> queryByLastName = queryEmployees.Apply(sqlByName);
 
          // LookupEmployee : Guid → Option<Employee>
          Option<Employee> LookupEmployee(Guid id)

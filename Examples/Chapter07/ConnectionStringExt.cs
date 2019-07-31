@@ -11,8 +11,10 @@ namespace Examples
    {
       public static Func<SqlTemplate, object, IEnumerable<T>>
       Query<T>(this ConnectionString connString)
-         => (sql, param)
-         => Connect(connString, conn => conn.Query<T>(sql, param));
+      {
+          return (sql, param)
+              => Connect(connString, conn => conn.Query<T>(sql, param));
+      }
 
       public static void Execute(this ConnectionString connString
          , SqlTemplate sql, object param)
