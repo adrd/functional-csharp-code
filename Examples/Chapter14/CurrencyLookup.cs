@@ -20,12 +20,12 @@ namespace Examples.Chapter14
       {
          var inputs = new Subject<string>();
 
-         // var rates =
-         //    from pair in inputs
-         //    from rate in Observable.FromAsync(() => Yahoo.GetRate(pair))
-         //    select rate;
+            //var rates =
+            //   from pair in inputs
+            //   from rate in Observable.FromAsync(() => Yahoo.GetRate(pair))
+            //   select rate;
 
-         var rates =
+            var rates =
             from pair in inputs
             from rate in Yahoo.GetRate(pair)
             select rate;

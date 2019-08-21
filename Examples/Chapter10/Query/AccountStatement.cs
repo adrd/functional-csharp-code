@@ -17,15 +17,15 @@ namespace Boc.Chapter10.Query
       public Transaction(DebitedTransfer e)
       {
          this.DebitedAmount = e.DebitedAmount;
-         Description = $"Transfer to {e.Bic}/{e.Iban}; Ref: {e.Reference}";
-         Date = e.Timestamp.Date;
+         this.Description = $"Transfer to {e.Bic}/{e.Iban}; Ref: {e.Reference}";
+         this.Date = e.Timestamp.Date;
       }
 
       public Transaction(DepositedCash e)
       {
          this.CreditedAmount = e.Amount;
-         Description = $"Deposit at {e.BranchId}";
-         Date = e.Timestamp.Date;
+         this.Description = $"Deposit at {e.BranchId}";
+         this.Date = e.Timestamp.Date;
       }
    }
 
@@ -40,22 +40,22 @@ namespace Boc.Chapter10.Query
 
       public AccountStatement(int month, int year, IEnumerable<Event> events)
       {
-         Month = month;
-         Year = year;
+         this.Month = month;
+         this.Year = year;
 
-         var startOfPeriod = new DateTime(year, month, 1);
-         var endOfPeriod = startOfPeriod.AddMonths(1);
+         DateTime startOfPeriod = new DateTime(year, month, 1);
+         DateTime endOfPeriod = startOfPeriod.AddMonths(1);
 
-         var eventsBeforePeriod = events
-            .TakeWhile(e => e.Timestamp < startOfPeriod);
-         var eventsDuringPeriod = events
-            .SkipWhile(e => e.Timestamp < startOfPeriod)
-            .TakeWhile(e => endOfPeriod < e.Timestamp);
+         IEnumerable<Event> eventsBeforePeriod = events
+                                                       .TakeWhile(e => e.Timestamp < startOfPeriod);
+         IEnumerable<Event> eventsDuringPeriod = events
+                                                       .SkipWhile(e => e.Timestamp < startOfPeriod)
+                                                       .TakeWhile(e => endOfPeriod < e.Timestamp);
 
-         StartingBalance = eventsBeforePeriod.Aggregate(0m, BalanceReducer);
-         EndBalance = eventsDuringPeriod.Aggregate(StartingBalance, BalanceReducer);
+         this.StartingBalance = eventsBeforePeriod.Aggregate(0m, BalanceReducer);
+         this.EndBalance = eventsDuringPeriod.Aggregate(StartingBalance, BalanceReducer);
 
-         Transactions = eventsDuringPeriod.Bind(CreateTransaction);
+         this.Transactions = eventsDuringPeriod.Bind(CreateTransaction);
       }
 
       Option<Transaction> CreateTransaction(Event evt)

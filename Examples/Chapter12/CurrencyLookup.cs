@@ -4,6 +4,7 @@ using System.Net.Http;
 using static System.Console;
 using LaYumba.Functional;
 using static LaYumba.Functional.F;
+using Decimal = System.Decimal;
 
 namespace StatefulComputations
 {
@@ -32,7 +33,7 @@ namespace StatefulComputations
          var input = ReadLine().ToUpper();
          if (input == "Q") return;
 
-         var (rate, newState) = GetRate(input, cache);
+         (Decimal rate, Rates newState) = GetRate(input, cache);
          WriteLine(rate);
          MainRec(newState); // recursively calls itself with the new state
       }

@@ -8,6 +8,7 @@ using LaYumba.Functional;
 
 using System.Reflection;
 using Microsoft.AspNetCore;
+using String = System.String;
 
 namespace Examples
 {
@@ -15,6 +16,7 @@ namespace Examples
    {
       public static void Main(string[] args)
       {
+          
          var cliExamples = new Dictionary<string, Action>
          {
             ["HOFs"] = Chapter1.HOFs.Run,
@@ -27,6 +29,9 @@ namespace Examples
             ["CurrencyLookup_Safe"] = Chapter14.CurrencyLookup_Safe.Run,
             ["VoidContinuations"] = Chapter14.VoidContinuations.Run,
             ["KeySequences"] = Chapter14.KeySequences.Run,
+            ["PingPongAgents"] = Examples.Agents.PingPongAgents.main,                  // Chapter15
+            ["TestViaCmdLine"] = Examples.Agents.CurrencyLookup.TestViaCmdLine,        // Chapter15
+            ["Counter"] = Examples.Agents.Counter.main                                 // Chapter15
          };
 
          if (args.Length > 0)

@@ -7,11 +7,17 @@ using Unit = System.ValueTuple;
 
 namespace Playground.WithLINQ.DbLogger
 {
+   // composition of 3 functions 
+   // start function : T
+   // transformation function: T
+   // continuation function: R
    public delegate dynamic Middleware<T>(Func<T, dynamic> cont);
 
    public static class Middleware
    {
+      // from elevated type to regular type (extract T from Middleware<T>)
       public static T Run<T>(this Middleware<T> mw) => mw(t => t);
+      //public static T Run<T>(this Middleware<T> mw) => mw.Invoke(t => { return t; });
 
       public static Middleware<R> Map<T, R>
          (this Middleware<T> mw, Func<T, R> f)
@@ -21,17 +27,46 @@ namespace Playground.WithLINQ.DbLogger
          (this Middleware<T> mw, Func<T, Middleware<R>> f)
          => SelectMany(mw, f);
 
+      //public static Middleware<R> Select<T, R>
+      //   (this Middleware<T> mw, Func<T, R> f)
+      //   => cont => mw(t => cont(f(t)));
+
       public static Middleware<R> Select<T, R>
-         (this Middleware<T> mw, Func<T, R> f)
-         => cont => mw(t => cont(f(t)));
+          (this Middleware<T> mw, Func<T, R> f)
+      {
+          return new Middleware<R>(cont =>
+          {
+              return mw.Invoke(new Func<T, dynamic>(t => cont.Invoke(f.Invoke(t))));
+          });   
+      }
 
-      public static Middleware<R> SelectMany<T, R>
-         (this Middleware<T> mw, Func<T, Middleware<R>> f)
-         => cont => mw(t => f(t)(cont));
+        // cand definesc o variabila un delegate Middleware<T> = definesc o metoda care primeste ca parametru un Func<T, dynamic> delegate si corpul executiei ei
+        // cand invoc un delegate Middleware<T> = definesc functia care primeste un T si intoarce un dynamic, altfel spus specific parametrii/argumetele lui Middleware<T>,
+        // altfel spus instantiez delegat-ul Func<T, dynamic>
 
-      public static Middleware<RR> SelectMany<T, R, RR>
-         (this Middleware<T> @this, Func<T, Middleware<R>> f, Func<T, R, RR> project)
-         => cont => @this(t => f(t)(r => cont(project(t, r))));
+        //public static Middleware<R> SelectMany<T, R>
+        //   (this Middleware<T> mw, Func<T, Middleware<R>> f)
+        //   => cont => mw(t => f(t)(cont));
+
+        public static Middleware<R> SelectMany<T, R>
+            (this Middleware<T> mw, Func<T, Middleware<R>> f)
+        {
+            return new Middleware<R>(cont => { return (dynamic)mw.Invoke(new Func<T, dynamic>(t => f.Invoke(t).Invoke(cont))); });
+        }
+
+        //public static Middleware<RR> SelectMany<T, R, RR>
+        //   (this Middleware<T> @this, Func<T, Middleware<R>> f, Func<T, R, RR> project)
+        //   => cont => @this(t => f(t)(r => cont(project(t, r))));
+
+        public static Middleware<RR> SelectMany<T, R, RR>
+          (this Middleware<T> @this, Func<T, Middleware<R>> f, Func<T, R, RR> project)
+      {
+          return new Middleware<RR>(cont =>
+          {
+              return (dynamic)@this.Invoke(t => { return (dynamic)f.Invoke(t).Invoke(r => cont.Invoke(project.Invoke(t, r))); });
+          });
+      }
+      
    }
 
    public class MiddlewreTests

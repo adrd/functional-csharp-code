@@ -12,13 +12,22 @@ namespace Examples.RandomState
 
    public static class Gen
    {
-      public static Generator<int> NextInt = (seed) =>
+      // Global Variables
+      //public static Generator<int> NextInt = (seed) =>
+      //{
+      //   seed ^= seed >> 13;
+      //   seed ^= seed << 18;
+      //   int result = seed & 0x7fffffff;
+      //   return (result, result);
+      //};
+
+      public static Generator<int> NextInt = new Generator<Int32>((seed) =>
       {
-         seed ^= seed >> 13;
-         seed ^= seed << 18;
-         int result = seed & 0x7fffffff;
-         return (result, result);
-      };
+          seed ^= seed >> 13;
+          seed ^= seed << 18;
+          int result = seed & 0x7fffffff;
+          return (result, result);
+      });
 
       static Generator<(int, int)> _PairOfInts = (seed0) =>
       {
@@ -27,6 +36,7 @@ namespace Examples.RandomState
          return ((a, b), seed2);
       };
 
+      // Properties
       public static Generator<(int, int)> PairOfInts =>
          from a in NextInt
          from b in NextInt
@@ -37,8 +47,22 @@ namespace Examples.RandomState
          from i in NextInt
          select some ? Some(i) : None;
 
-      public static Generator<bool> NextBool
-         => from i in NextInt select i % 2 == 0;
+        //public static Generator<bool> NextBool
+        //   => from i in NextInt select i % 2 == 0;
+
+        public static Generator<bool> NextBool {
+            get
+            {
+                return from i in NextInt 
+                        select i % 2 == 0;
+            }
+        }
+
+        //public static Generator<bool> NextBool()
+        //{
+        //    return from i in NextInt 
+        //            select i % 2 == 0;
+        //}
 
       public static Generator<char> NextChar
          => from i in NextInt select (char)(i % (char.MaxValue + 1));
@@ -60,7 +84,13 @@ namespace Examples.RandomState
          => from ints in IntList
             select IntsToString(ints);
 
-      static char IntToChar(int i) => (char)(i % (char.MaxValue + 1));
+      // Methods
+      //static char IntToChar(int i) => (char)(i % (char.MaxValue + 1));
+
+      static char IntToChar(int i)
+      {
+          return (char) (i % (char.MaxValue + 1));
+      }
 
       static string IntsToString(this IEnumerable<int> ints)
       {
@@ -83,13 +113,22 @@ namespace Examples.RandomState
 
    public static class GenExt
    {
+      // from elevated type to regular type
       public static T Run<T>(this Generator<T> gen, int seed)
-         => gen(seed).Value;
+         => gen.Invoke(seed).Value;
 
       public static T Run<T>(this Generator<T> gen)
          => gen(Environment.TickCount).Value;
 
       // LINQ
+
+      public static Generator<R> Map<T, R>
+          (this Generator<T> gen, Func<T, R> f)
+          => seed =>
+          {
+              var (t, newSeed) = gen(seed);
+              return (f(t), newSeed);
+          };
 
       public static Generator<R> Select<T, R>
          (this Generator<T> gen, Func<T, R> f)
@@ -99,15 +138,23 @@ namespace Examples.RandomState
             return (f(t), seed1);
          };
 
-      public static Generator<R> SelectMany<T, R>
-         (this Generator<T> gen, Func<T, Generator<R>> f)
-         => seed0 =>
-         {
-            var (t, seed1) = gen(seed0);
-            return f(t)(seed1);
-         };
+      public static Generator<R> Bind<T, R>
+          (this Generator<T> gen, Func<T, Generator<R>> f)
+          => seed0 =>
+          {
+              var (t, seed1) = gen(seed0);
+              return f(t)(seed1);
+          };
 
-      public static Generator<RR> SelectMany<T, R, RR>
+        public static Generator<R> SelectMany<T, R>
+           (this Generator<T> gen, Func<T, Generator<R>> f)
+           => seed0 =>
+           {
+               var (t, seed1) = gen(seed0);
+               return f(t)(seed1);
+           };
+
+        public static Generator<RR> SelectMany<T, R, RR>
          (this Generator<T> gen
          , Func<T, Generator<R>> bind
          , Func<T, R, RR> project)

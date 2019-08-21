@@ -9,6 +9,7 @@ namespace LaYumba.Functional
 
    public static partial class F
    {
+      // equivalent of Return function : T -> C<T>
       public static Task<T> Async<T>(T t) => Task.FromResult(t);
    }
 
@@ -28,12 +29,19 @@ namespace LaYumba.Functional
          => Apply(@this.Map(F.CurryFirst), arg);
 
 
-      public static async Task<R> Map<T, R>
-         (this Task<T> task, Func<T, R> f)
-         //=> f(await task);
-         => f(await task.ConfigureAwait(false));
+        public static async Task<R> Map<T, R>
+           (this Task<T> task, Func<T, R> f)
+           //=> f(await task);
+           => f(await task.ConfigureAwait(false));
 
-      public static async Task<R> Map<R>
+        //public static async Task<R> Map<T, R>
+        //    (this Task<T> task, Func<T, R> f)
+        //    //=> f(await task);
+        //{
+        //   return f.Invoke(await task.ConfigureAwait(false)); // R = result is automatically wrapped in a Task 
+        //}
+
+        public static async Task<R> Map<R>
          (this Task task, Func<R> f)
       {
          await task;

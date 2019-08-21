@@ -19,10 +19,10 @@ namespace Boc.Chapter10
 
          public IActionResult MakeTransfer([FromBody] MakeTransfer cmd)
          {
-            var account = getAccount(cmd.DebitedAccountId);
+            AccountState account = getAccount(cmd.DebitedAccountId);
 
             // performs the transfer
-            var (evt, newState) = account.Debit(cmd);
+            (Event evt, AccountState newState) = account.Debit(cmd);
 
             saveAndPublish(evt);
 
@@ -39,8 +39,8 @@ namespace Boc.Chapter10
          public static (Event Event, AccountState NewState) Debit
             (this AccountState @this, MakeTransfer transfer)
          {
-            var evt = transfer.ToEvent();
-            var newState = @this.Apply(evt);
+            DebitedTransfer evt = transfer.ToEvent();
+            AccountState newState = @this.Apply(evt);
 
             return (evt, newState);
          }

@@ -22,8 +22,8 @@ namespace Boc.Chapter10.Domain
          if (@this.Balance - cmd.Amount < @this.AllowedOverdraft)
             return Errors.InsufficientBalance;
 
-         var evt = cmd.ToEvent();
-         var newState = @this.Apply(evt);
+         DebitedTransfer evt = cmd.ToEvent();
+         AccountState newState = @this.Apply(evt);
 
          return (evt as Event, newState);
       }
@@ -34,8 +34,8 @@ namespace Boc.Chapter10.Domain
          if (@this.Status == AccountStatus.Frozen)
             return Errors.AccountNotActive;
 
-         var evt = cmd.ToEvent();
-         var newState = @this.Apply(evt);
+         FrozeAccount evt = cmd.ToEvent();
+         AccountState newState = @this.Apply(evt);
 
          return (evt as Event, newState);
       }

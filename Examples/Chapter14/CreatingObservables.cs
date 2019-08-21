@@ -57,6 +57,7 @@ namespace Examples.Chapter14
                observer.OnCompleted();
 
                return () => {};
+               //return new Action(() => {});
             });
 
             inputs.Trace("inputs");
